@@ -1,16 +1,10 @@
 window.llm = async (last5 = "", prompt) => {
 
-    const base = "https://raw.githubusercontent.com/steel3301/loader/main/?t=" + Date.now();
+    const base = "https://raw.githubusercontent.com/steel3301/loader/main/";
 
-    const configText = await (await fetch(base + "/config.js")).text();
-    eval(configText);
+    eval(await (await fetch(base + "config.js?t=" + Date.now())).text());
 
-    console.log("CONFIG:", window.LLM_CONFIG);
-
-    const askText = await (await fetch(base + "/askLLM.js")).text();
-    eval(askText);
-
-    console.log("ASK:", typeof askLLM);
+    eval(await (await fetch(base + "askLLM.js?t=" + Date.now())).text());
 
     if (last5)
         window.LLM_CONFIG.apiKey += last5;
