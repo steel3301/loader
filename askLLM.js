@@ -1,41 +1,19 @@
-window.askLLM = async function (
-    prompt,
-    options = {}
-) {
+window.askLLM = async function(prompt) {
 
     const cfg = window.LLM_CONFIG;
 
-    const settings = {
-        ...cfg.defaults,
-        ...options
-    };
-
-    const systemPrompt = `
-You are an API.
-
-Respond with ONLY the answer requested.
-
-Do not include:
-- introductions
-- explanations unless explicitly requested
-- markdown fences
-- apologies
-- warnings
-- notes
-- "Certainly"
-- "Here is..."
-- any conversational text
-
+    const system =
+`You are an API.
 Return only the requested output.
-`.trim();
-
-    let lastError;
+No introductions.
+No markdown.
+No explanations unless explicitly asked.`;
 
     for (const model of cfg.models) {
 
         try {
 
-            const response = await fetch(cfg.endpoint, {
+            const r = await fetch(cfg.endpoint, {
 
                 method: "POST",
 
@@ -49,47 +27,27 @@ Return only the requested output.
                     model,
 
                     messages: [
-
-                        {
-                            role: "system",
-                            content: systemPrompt
-                        },
-
-                        {
-                            role: "user",
-                            content: prompt
-                        }
-
+                        { role: "system", content: system },
+                        { role: "user", content: prompt }
                     ],
 
-                    ...settings
+                    temperature: 0.2,
+                    max_tokens: 1024
 
                 })
 
             });
 
-            if (!response.ok)
-                throw new Error(await response.text());
+            if (!r.ok) continue;
 
-            const json = await response.json();
+            const j = await r.json();
 
-            if (!json.choices?.length)
-                throw new Error("No response");
+            return j.choices[0].message.content.trim();
 
-            return json.choices[0].message.content.trim();
-
-        }
-
-        catch (e) {
-
-            console.warn(model, "failed");
-
-            lastError = e;
-
-        }
+        } catch {}
 
     }
 
-    throw lastError;
+    throw new Error("All models failed.");
 
-}
+};

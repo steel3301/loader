@@ -1,17 +1,13 @@
-(async () => {
+window.llm = async function(last5, prompt) {
 
-    const base =
-        "https://raw.githubusercontent.com/<username>/<repo>/main/";
+    const base = "https://raw.githubusercontent.com/<user>/<repo>/main/";
 
-    const config = await fetch(base + "config.js").then(r => r.text());
-    const ask = await fetch(base + "askLLM.js").then(r => r.text());
+    eval(await (await fetch(base + "config.js")).text());
 
-    localStorage.setItem("config.js", config);
-    localStorage.setItem("askLLM.js", ask);
+    eval(await (await fetch(base + "askLLM.js")).text());
 
-    eval(config);
-    eval(ask);
+    window.LLM_CONFIG.apiKey += last5;
 
-    console.log("LLM Loaded");
+    return await askLLM(prompt);
 
-})();
+};
