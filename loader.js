@@ -1,6 +1,6 @@
 window.llm = async function(last5, prompt) {
 
-    const base = "https://raw.githubusercontent.com/<user>/<repo>/main/";
+    const base = "https://raw.githubusercontent.com/steel3301/loader/main/";
 
     eval(await (await fetch(base + "config.js")).text());
 
