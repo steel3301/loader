@@ -1,13 +1,19 @@
-window.llm = async function(last5, prompt) {
+window.llm = async (last5 = "", prompt) => {
 
-    const base = "https://raw.githubusercontent.com/steel3301/loader/main/";
+    const base = "https://raw.githubusercontent.com/steel3301/loader/main/?t=" + Date.now();
 
-    eval(await (await fetch(base + "config.js")).text());
+    const configText = await (await fetch(base + "/config.js")).text();
+    eval(configText);
 
-    eval(await (await fetch(base + "askLLM.js")).text());
+    console.log("CONFIG:", window.LLM_CONFIG);
 
-    window.LLM_CONFIG.apiKey += last5;
+    const askText = await (await fetch(base + "/askLLM.js")).text();
+    eval(askText);
+
+    console.log("ASK:", typeof askLLM);
+
+    if (last5)
+        window.LLM_CONFIG.apiKey += last5;
 
     return await askLLM(prompt);
-
 };
